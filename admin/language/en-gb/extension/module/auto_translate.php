@@ -16,6 +16,7 @@ $_['text_done']                 = 'Done!<br />';
 
 // Entry
 $_['entry_key']                 = 'App Key';
+$_['entry_code']                = 'Lang code';
 $_['entry_region']              = 'API Region';
 $_['entry_language']            = 'Language to Translate to';
 $_['entry_type']                = 'Type';

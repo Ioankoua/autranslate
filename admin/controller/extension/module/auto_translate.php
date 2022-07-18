@@ -51,6 +51,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         );
 
         $data['auto_translate_key'] = $this->config->get('module_auto_translate_key');
+        $data['auto_translate_code'] = $this->config->get('module_auto_translate_code');
         $data['auto_translate_region'] = $this->config->get('module_auto_translate_region');
 
         $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);

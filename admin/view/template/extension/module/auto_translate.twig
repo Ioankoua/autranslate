@@ -38,6 +38,14 @@
                 </div>
                 <div class="col-sm-4">
                   <div class="row">
+                    <label class="col-sm-4 control-label col-form-label" for="input-code">{{ entry_code }}</label>
+                    <div class="col-sm-8">
+                      <input type="text" name="module_auto_translate_code" value="{{ auto_translate_code }}" placeholder="{{ entry_code }}" id="input-code" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="row">
                     <label class="col-sm-4 control-label col-form-label" for="input-region">{{ entry_region }}</label>
                     <div class="col-sm-8">
                       <select name="module_auto_translate_region" id="input-region" class="form-control">

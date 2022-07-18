@@ -1,11 +1,6 @@
 
 <button id="save_and_stay" data-toggle="tooltip" title="Save and stay" class="btn btn-success"><i class="fa fa-save"></i></button>
 <script>
-function cutTegs(str) {
- var regex = /( |<([^>]+)>)/ig,
-     result = str.replace(regex, "");
-     return result;
-}
 
 $(document).on('click', '#save_and_stay', function() {
 
@@ -14,7 +9,6 @@ $(document).on('click', '#save_and_stay', function() {
   var meta_title = $('#input-meta-title{{ from_lang_id }}').val();
   var el = $('.note-editable');
   console.log(description)
-  //description = cutTegs(description);
 
     $.ajax({
         type: 'post',
@@ -41,10 +35,8 @@ $(document).on('click', '#save_and_stay', function() {
                     var current_element = $('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id');
                     
                     if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[$('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id')]) {
-                        console.log(1);
                         CKEDITOR.instances[$('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id')].setData(json['description']);
                     } else if (typeof $('#' + current_element).attr('data-toggle') !== 'undefined' && $('#' + current_element).attr('data-toggle') == 'summernote') {
-                        console.log(2);
                         $('#' + current_element).summernote('code', json['description']);
                     }
                     console.log(3);

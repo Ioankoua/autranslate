@@ -16,12 +16,12 @@ class ModelExtensionModuleAutoTranslate extends Model {
 
             $values = array(
                 'key'    => $this->config->get('module_auto_translate_key'),
-                'target' => "uk",
+                'target' => $this->config->get('module_auto_translate_code'),
                 'q'      => $text
                 );
 
             $handle = curl_init($url);
-            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);     //We want the result to be saved into variable, not printed out
+            curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($handle, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($handle, CURLOPT_POSTFIELDS, $values);
             curl_setopt($handle, CURLOPT_HTTPHEADER, array('X-HTTP-Method-Override: GET'));
@@ -85,22 +85,6 @@ class ModelExtensionModuleAutoTranslate extends Model {
             $this->updateAttributeGroup($from_language, $to_language, $start);
         } elseif ($type == 'product_attribute') {
             $this->updateProductAttribute($from_language, $to_language, $start);
-        }
-    }
-
-    public function updateBanner($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "banner_image WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY banner_id ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            $title = $this->translate($from_language, $to_language, $result['title']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "banner_image WHERE banner_id = '" . (int)$result['banner_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "banner_image SET title = '" . $this->db->escape($title) . "', banner_id = '" . (int)$result['banner_id'] . "', language_id = '" . (int)$to_language['language_id'] . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "banner_image SET title = '" . $this->db->escape($title) . "' WHERE banner_id = '" . (int)$result['banner_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
         }
     }
 
@@ -223,101 +207,10 @@ class ModelExtensionModuleAutoTranslate extends Model {
         }
     }
 
-    public function updateProductAttribute($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attribute WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY product_id ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Text
-            $text = $this->translate($from_language, $to_language, $result['text']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "product_attribute WHERE product_id = '" . (int)$result['product_id'] . "' AND attribute_id = '" . (int)$result['attribute_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "product_attribute SET product_id = '" . (int)$result['product_id'] . "', attribute_id = '" . (int)$result['attribute_id'] . "', language_id = '" . (int)$to_language['language_id'] . "', text = '" . $this->db->escape($text) . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "product_attribute SET text = '" . $this->db->escape($text) . "' WHERE product_id = '" . (int)$result['product_id'] . "' AND attribute_id = '" . (int)$result['attribute_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
-    public function updateOption($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY name ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Name
-            $name = $this->translate($from_language, $to_language, $result['name']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_description WHERE option_id = '" . (int)$result['option_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "option_description SET name = '" . $this->db->escape($name) . "', option_id = '" . (int)$result['option_id'] . "', language_id = '" . (int)$to_language['language_id'] . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "option_description SET name = '" . $this->db->escape($name) . "' WHERE option_id = '" . (int)$result['option_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
-    public function updateOptionValue($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY name ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Name
-            $name = $this->translate($from_language, $to_language, $result['name']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "option_value_description WHERE option_value_id = '" . (int)$result['option_value_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "option_value_description SET name = '" . $this->db->escape($name) . "', option_id = '" . (int)$result['option_id'] . "', option_value_id = '" . (int)$result['option_value_id'] . "', language_id = '" . (int)$to_language['language_id'] . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "option_value_description SET name = '" . $this->db->escape($name) . "' WHERE option_value_id = '" . (int)$result['option_value_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
-    public function updateAttribute($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "attribute_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY name ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Name
-            $name = $this->translate($from_language, $to_language, $result['name']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "attribute_description WHERE attribute_id = '" . (int)$result['attribute_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "attribute_description SET name = '" . $this->db->escape($name) . "', attribute_id = '" . (int)$result['attribute_id'] . "', language_id = '" . (int)$to_language['language_id'] . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "attribute_description SET name = '" . $this->db->escape($name) . "' WHERE attribute_id = '" . (int)$result['attribute_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
-    public function updateAttributeGroup($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "attribute_group_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY name ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Name
-            $name = $this->translate($from_language, $to_language, $result['name']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "attribute_group_description WHERE attribute_group_id = '" . (int)$result['attribute_group_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "attribute_group_description SET name = '" . $this->db->escape($name) . "', attribute_group_id = '" . (int)$result['attribute_group_id'] . "', language_id = '" . (int)$to_language['language_id'] . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "attribute_group_description SET name = '" . $this->db->escape($name) . "' WHERE attribute_group_id = '" . (int)$result['attribute_group_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
     public function getLanguageIdByCode($code) {
 		$query = $this->db->query("SELECT language_id FROM " . DB_PREFIX . "language WHERE code = '" . $code . "'");
 
 		return $query->row;
-	}
-
-    public function getOption() {
-		$query = $this->db->query("SELECT option_id FROM " . DB_PREFIX . "option_value");
-
-		return $query->rows;
 	}
     
     public function translateOneProduct($from_language, $to_language, $data) {
@@ -329,19 +222,5 @@ class ModelExtensionModuleAutoTranslate extends Model {
         
 
         return $result[] = ['name' => $name, 'description' => $description, 'meta_title' => $meta_title];  
-    }
-
-    public function translateOption($from_language, $to_language, $data) {
-
-        $name = $this->translate($from_language, $to_language, $data['name']);
-        if(isset($data['option'])){
-            foreach ($data['option'] as $key) {
-                $option[] = $this->translate($from_language, $to_language, $key);
-            }
-        }else{
-            $option = false;
-        }
-
-        return $result[] = ['name' => $name, 'option' => $option];  
     }
 }
