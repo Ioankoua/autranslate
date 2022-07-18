@@ -122,31 +122,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         $this->load->model('setting/event');
 
         $this->model_setting_event->addEvent('module_auto_translate', 'admin/view/common/header/after', 'extension/module/auto_translate/eventPostCommonHeader');
-
-        if (isset($this->request->get['demo'])) {
-            $this->load->model('localisation/language');
-
-            $data = array(
-                'name'       => 'Chinese',
-                'code'       => 'zh',
-                'locale'     => '',
-                'directory'  => 'zh',
-                'filename'   => 'chinese.php',
-                'image'      => 'cn.png',
-                'status'     => '0',
-                'sort_order' => '1'
-            );
-
-            $this->model_localisation_language->addLanguage($data);
-
-            @mkdir(DIR_LANGUAGE . 'zh/');
-
-            if (file_exists(DIR_LANGUAGE . 'en-gb/en-gb.png')) {
-                @copy(DIR_LANGUAGE . 'en-gb/en-gb.png', DIR_LANGUAGE . 'zh/zh.png');
-            } else {
-                @copy(DIR_LANGUAGE . 'english/english.php', DIR_LANGUAGE . 'zh/chinese.php');
-            }
-        }
+        $this->model_setting_event->addEvent('module_auto_translate', 'admin/view/catalog/product_form/after', 'extension/module/auto_translate/view_catalog_product_form_after');
     }
     
     public function uninstall() {
@@ -304,7 +280,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
 
     public function view_catalog_product_form_after(&$route, &$data, &$output) {
         $this->load->model('extension/module/auto_translate');
-        $mydata['url'] = $this->url->link('extension/module/auto_translate/save_product&user_token=' . $this->session->data['user_token']);
+        $mydata['url'] = $this->url->link('extension/module/auto_translate/translateProduct&user_token=' . $this->session->data['user_token']);
         $from_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('en-gb');
         $to_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('uk-ua');
         $mydata['from_lang_id'] = $from_lang_id['language_id'];
@@ -317,26 +293,10 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         $output = (string)$html_dom;
     }
 
-    public function save_product() {
+    public function translateProduct() {
         $this->load->model('extension/module/auto_translate');
         $json = $this->model_extension_module_auto_translate->translateOneProduct('en-gb', 'uk-ua', $this->request->post);
         $this->response->setOutput(json_encode($json));
-    }
-
-    public function view_catalog_option_form_after(&$route, &$data, &$output) {
-        $this->load->model('extension/d_opencart_patch/url');
-        $this->load->model('extension/module/auto_translate');
-        $mydata['url'] = $this->model_extension_d_opencart_patch_url->link('extension/module/auto_translate/save_option&user_token=' . $this->session->data['user_token']);
-        $from_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('en-gb');
-        $to_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('uk-ua');
-        $mydata['max_option'] = $this->getMaxCountOption();
-        $mydata['from_lang_id'] = $from_lang_id['language_id'];
-        $mydata['to_lang_id'] = $to_lang_id['language_id'];
-        $button = $this->load->view('extension/module/auto_translate/button_translate_option', $mydata);
-        $html_dom = new d_simple_html_dom();
-        $html_dom->load((string)$output, $lowercase = true, $stripRN = false, $defaultBRText = DEFAULT_BR_TEXT);
-        $html_dom->find('.page-header .pull-right', 0)->innertext = $button . $html_dom->find('.page-header .pull-right', 0)->innertext;
-        $output = (string)$html_dom;
     }
 
     public function getMaxCountOption() {
@@ -348,11 +308,5 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         }
         $count_option = array_count_values($arr);
         return max($count_option);
-    }
-
-    public function save_option() {
-        $this->load->model('extension/module/auto_translate');
-        $json = $this->model_extension_module_auto_translate->translateOption('en-gb', 'uk-ua', $this->request->post);
-        $this->response->setOutput(json_encode($json));
     }
 }

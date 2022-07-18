@@ -1,14 +1,13 @@
 
-<button id="save_and_stay" data-toggle="tooltip" title="Save and stay" class="btn btn-success"><i class="fa fa-save"></i></button>
+<button id="translate_product" data-toggle="tooltip" title="Translate" class="btn btn-warning"><i class="fa fa-refresh"></i></button>
 <script>
 
-$(document).on('click', '#save_and_stay', function() {
+$(document).on('click', '#translate_product', function() {
 
   var name = $('#input-name{{ from_lang_id }}').val();
   var description = $('#input-description{{ from_lang_id }}').val();
   var meta_title = $('#input-meta-title{{ from_lang_id }}').val();
   var el = $('.note-editable');
-  console.log(description)
 
     $.ajax({
         type: 'post',
