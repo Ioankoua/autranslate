@@ -106,16 +106,18 @@ $(document).ready(function() {
             },
             success: function(json) {
                 element.html('Translate');
-                
+                console.log('[name*=\'' + element.attr('data-current') + '\']');
                 if (json['text']) {
                     var current_element = $('[name*=\'' + element.attr('data-current') + '\']').attr('id');
                     
                     if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[$('[name*=\'' + element.attr('data-current') + '\']').attr('id')]) {
+                        console.log(1);
                         CKEDITOR.instances[$('[name*=\'' + element.attr('data-current') + '\']').attr('id')].setData(json['text']);
                     } else if (typeof $('#' + current_element).attr('data-toggle') !== 'undefined' && $('#' + current_element).attr('data-toggle') == 'summernote') {
+                        console.log(2);
                         $('#' + current_element).summernote('code', json['text']);
                     }
-                    
+                    console.log(3);
                     $('[name*=\'' + element.attr('data-current') + '\']').val(json['text']);
                 } else {
                     alert('No translation available');
