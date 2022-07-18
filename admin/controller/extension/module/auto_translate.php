@@ -1,7 +1,5 @@
 <?php
-require_once(DIR_SYSTEM . 'library/equotix/auto_translate/equotix.php');
-
-class ControllerExtensionModuleAutoTranslate extends Equotix {
+class ControllerExtensionModuleAutoTranslate extends Controller {
     protected $version = '2.2.0';
     protected $code = 'auto_translate';
     protected $extension = 'Auto Translate';
@@ -103,7 +101,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
 
-        $this->generateOutput('extension/module/auto_translate', $data);
+        $this->response->setOutput($this->load->view('extension/module/auto_translate', $data));
     }
 
     public function install() {
@@ -136,7 +134,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
     }
 
     protected function validate() {
-        if (!$this->user->hasPermission('modify', 'extension/module/auto_translate') || !$this->validated()) {
+        if (!$this->user->hasPermission('modify', 'extension/module/auto_translate')) {
             $this->error['warning'] = $this->language->get('error_permission');
         }
         
@@ -198,12 +196,6 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
     public function translate() {
         $json = array();
 
-        if (!$this->validated()) {
-            $this->response->setOutput(json_encode($json));
-
-            return;
-        }
-
         $this->load->model('localisation/language');
         $this->load->model('extension/module/auto_translate');
 
@@ -233,12 +225,6 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
 
     public function mass_translate() {
         $json = array();
-
-        if (!$this->validated()) {
-            $this->response->setOutput(json_encode($json));
-
-            return;
-        }
 
         $this->load->language('extension/module/auto_translate');
 
