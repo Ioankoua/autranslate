@@ -310,9 +310,8 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
     }
 
     public function view_catalog_product_form_after(&$route, &$data, &$output) {
-        $this->load->model('extension/d_opencart_patch/url');
         $this->load->model('extension/module/auto_translate');
-        $mydata['url'] = $this->model_extension_d_opencart_patch_url->link('extension/module/auto_translate/save_product&user_token=' . $this->session->data['user_token']);
+        $mydata['url'] = $this->url->link('extension/module/auto_translate/save_product&user_token=' . $this->session->data['user_token']);
         $from_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('en-gb');
         $to_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('uk-ua');
         $mydata['from_lang_id'] = $from_lang_id['language_id'];

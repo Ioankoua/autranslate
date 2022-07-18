@@ -7,4 +7,5 @@
 !admin/view/javascript/auto_translate.php.js
 !admin/view/extension/module/auto_translate/*
 !admin/view/extension/module/auto_translate.twig
+!system/library/d_simple_html_dom.php
 !system/library/equotix/*
