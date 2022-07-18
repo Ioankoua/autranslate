@@ -1,0 +1,41 @@
+<button id="save_and_stay" data-toggle="tooltip" title="Save and stay" class="btn btn-success"><i class="fa fa-save"></i></button>
+<script>
+$(document).on('click', '#save_and_stay', function() {
+
+  var name = $("input[name='option_description[{{ from_lang_id }}][name]']").val();
+  var option = [];
+  var option_value_row = 1;
+  html  = '<tr id="option-value-row' + option_value_row + '">';
+  for (var i = 0; i < {{ max_option }}; i++) {
+    option.push($('input[name="option_value['+ i +'][option_value_description][{{ from_lang_id }}][name]"]').val());
+  }
+
+    $.ajax({
+        type: 'post',
+        url: "{{ url }}",
+        data: {
+          name: name,
+          option: option
+        },
+        dataType: 'json',
+        beforeSend: function() {
+            $('#form-option').fadeTo('slow', 0.5);
+        },
+        complete: function() {
+            $('#form-option').fadeTo('slow', 1);
+        },
+        success: function(json) {
+            $("input[name='option_description[{{ to_lang_id }}][name]']").val(json['name']);
+            var lenght = json['option'].length;
+            for (var i = 0; i < lenght; i++) {
+                $('input[name="option_value['+ i +'][option_value_description][{{ to_lang_id }}][name]"]').val(json['option'][i]);
+            }
+        },
+        error: function(json) {
+            console.log(json);
+        }
+    });
+});
+
+
+</script>

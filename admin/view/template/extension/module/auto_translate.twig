@@ -1,0 +1,170 @@
+{{ header }} {{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-right pull-right">
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-light btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="panel panel-default card">
+      <div class="panel-heading">
+        <h3 class="panel-title card-header"><i class="fa fa-pencil fas fa-pencil-alt"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body card-body">
+        <div class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="nav-item active">
+              <a href="#tab-general" data-toggle="tab" class="nav-link active">{{ tab_general }}</a></li>
+            {{ about }}
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-general">
+              <form id="auto-translate-form" class="row">
+                <div class="col-sm-4">
+                  <div class="row">
+                    <label class="col-sm-4 control-label col-form-label" for="input-key">{{ entry_key }}</label>
+                    <div class="col-sm-8">
+                      <input type="text" name="module_auto_translate_key" value="{{ auto_translate_key }}" placeholder="{{ entry_key }}" id="input-key" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="row">
+                    <label class="col-sm-4 control-label col-form-label" for="input-region">{{ entry_region }}</label>
+                    <div class="col-sm-8">
+                      <select name="module_auto_translate_region" id="input-region" class="form-control">
+                        {% for region in regions %}
+                        <option value="{{ region }}"{{ auto_translate_region == region ? ' selected="selected"' : '' }}>{{ region }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-4 text-right">
+                  <a id="button-update-credentials" class="btn btn-success text-white">{{ button_update }}</a>
+                </div>
+              </form>
+              <div class="row">
+                <div class="col-sm-12">
+                  <br/><br/>
+                  <h3>{{ text_mass_translate }}</h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-4">
+                  <div class="row">
+                    <label class="col-sm-4 control-label col-form-label" for="input-language-id">{{ entry_language }}</label>
+                    <div class="col-sm-8">
+                      <select name="language_id" id="input-language-id" class="form-control">
+                        {% for language in languages %}
+                        <option value="{{ language.language_id }}">{{ language.name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="row">
+                    <label class="col-sm-4 control-label col-form-label" for="input-type">{{ entry_type }}</label>
+                    <div class="col-sm-8">
+                      <select name="type" id="input-type" class="form-control">
+                        {% for type in types %}
+                        <option value="{{ type }}">{{ type }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="row">
+                    <label class="col-sm-6 control-label col-form-label" for="input-start">{{ entry_start }}</label>
+                    <div class="col-sm-6">
+                      <input type="text" name="start" value="0" class="form-control"/>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-2 text-right">
+                  <a id="button-translate" class="btn btn-primary text-white">{{ button_translate }}</a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-12"><br/><br/>
+                  <div id="translate-logs" style="height:200px;overflow:auto;background:#eeeeee;padding:10px;"></div>
+                </div>
+              </div>
+            </div>
+            {{ tab }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--//
+$('#button-update-credentials').on('click', function () {
+    $.ajax({
+        url: 'index.php?route=extension/module/auto_translate/update{{ equotix_token }}',
+        type: 'post',
+        data: $("#auto-translate-form").serialize(),
+        dataType: 'json',
+        beforeSend: function () {
+            $('#button-update-credentials').after('<i class="fa fa-spinner fa-spin"></i>');
+        },
+        success: function (json) {
+            $('.fa-spinner').remove();
+
+            $('#auto-translate-form input, #auto-translate-form select').css('border', '1px solid #00ff00');
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+
+    return false;
+});
+
+$('#button-translate').on('click', function () {
+    $('#translate-logs').append('{{ text_translating }}<br />');
+
+    mass_translate('index.php?route=extension/module/auto_translate/mass_translate{{ equotix_token }}&start=' + $('input[name=\'start\']').val());
+
+    return false;
+});
+
+function mass_translate(url) {
+    $.ajax({
+        url: url,
+        type: 'post',
+        data: $('#tab-general select'),
+        dataType: 'json',
+        beforeSend: function () {
+            $('#button-translate').html('{{ text_translating }}');
+            $('#button-translate').attr('disabled', 'true');
+        },
+        success: function (json) {
+            $('#translate-logs').append(json['logs']);
+
+            if (json['next']) {
+                mass_translate(json['next']);
+            } else {
+                $('#button-translate').html('{{ button_translate }}');
+                $('#button-translate').attr('disabled', 'false');
+                $('#translate-logs').append(json['done']);
+            }
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+}
+
+//--></script>
+{{ footer }} 

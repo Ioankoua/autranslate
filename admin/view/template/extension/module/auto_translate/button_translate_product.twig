@@ -1,0 +1,47 @@
+
+<button id="save_and_stay" data-toggle="tooltip" title="Save and stay" class="btn btn-success"><i class="fa fa-save"></i></button>
+<script>
+function cutTegs(str) {
+ var regex = /( |<([^>]+)>)/ig,
+     result = str.replace(regex, "");
+     return result;
+}
+
+$(document).on('click', '#save_and_stay', function() {
+
+  var name = $('#input-name{{ from_lang_id }}').val();
+  var description = $('#input-description{{ from_lang_id }}').val();
+  var meta_title = $('#input-meta-title{{ from_lang_id }}').val();
+  var el = $('.note-editable');
+  console.log(description)
+  //description = cutTegs(description);
+
+    $.ajax({
+        type: 'post',
+        url: "{{ url }}",
+        data: {
+          name: name,
+          description: description,
+          meta_title: meta_title
+        },
+        dataType: 'json',
+        beforeSend: function() {
+            $('#form-product').fadeTo('slow', 0.5);
+        },
+        complete: function() {
+            $('#form-product').fadeTo('slow', 1);
+        },
+        success: function(json) {
+            $('#input-name{{ to_lang_id }}').val(json['name']);
+            $('#input-description{{ to_lang_id }}').val(json['description']);
+            $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
+            el[1].innerText = json['description'];
+        },
+        error: function(json) {
+            console.log(json);
+        }
+    });
+});
+
+
+</script>
