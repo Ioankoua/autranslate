@@ -4,6 +4,7 @@
 !admin/controller/extension/module/auto_translate.php
 !admin/model/extension/module/auto_translate.php
 !admin/language/en-gb/extension/module/auto_translate.php
+!admin/view/javascript/auto_translate.php.js
 !admin/view/extension/module/auto_translate/*
 !admin/view/extension/module/auto_translate.twig
 !system/library/equotix/*
