@@ -96,15 +96,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         );
 
         $data['types'] = array(
-            'banner',
-            'category',
-            'information',
-            'product',
-            'option',
-            'option_value',
-            'attribute',
-            'attribute_group',
-            'product_attribute'
+            'product'
         );
 
         $data['header'] = $this->load->controller('common/header');
