@@ -13,7 +13,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
     public function index() {
         $this->load->language('extension/module/auto_translate');
 
-        $this->document->setTitle(strip_tags($this->language->get('heading_title')));
+        $this->document->setTitle(strip_tags($this->language->get('subheading_title')));
 
         $data['heading_title'] = $this->language->get('heading_title');
 
@@ -46,7 +46,7 @@ class ControllerExtensionModuleAutoTranslate extends Equotix {
         );
 
         $data['breadcrumbs'][] = array(
-            'text' => $this->language->get('heading_title'),
+            'text' => $this->language->get('subheading_title'),
             'href' => $this->url->link('extension/module/auto_translate', 'user_token=' . $this->session->data['user_token'], true)
         );
 

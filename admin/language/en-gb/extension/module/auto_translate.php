@@ -1,6 +1,7 @@
 <?php
 // Heading
-$_['heading_title']                = '<span style="color:#449DD0; font-weight:bold">Auto Translate</span><span style="font-size:12px; color:#999"> by <a href="https://www.opencart.com/index.php?route=marketplace/extension&filter_member=Dreamvention" style="font-size:1em; color:#999" target="_blank">Dreamvention</a></span>';
+$_['heading_title']             = '<span style="color:#449DD0; font-weight:bold">Auto Translate</span><span style="font-size:12px; color:#999"> by <a href="https://www.opencart.com/index.php?route=marketplace/extension&filter_member=Dreamvention" style="font-size:1em; color:#999" target="_blank">Dreamvention</a></span>';
+$_['subheading_title']          = 'Auto Translate';
 
 // Button
 $_['button_update']             = 'Update Client Credentials';
