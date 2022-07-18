@@ -38,22 +38,20 @@ $(document).on('click', '#save_and_stay', function() {
             $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
 
             if (json['description']) {
-                    var current_element = $('[name*="product_description[2][description]"]').attr('id');
+                    var current_element = $('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id');
                     
-                    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[$('[name*="product_description[2][description]"]').attr('id')]) {
+                    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[$('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id')]) {
                         console.log(1);
-                        CKEDITOR.instances[$('[name*="product_description[2][description]"]').attr('id')].setData(json['description']);
+                        CKEDITOR.instances[$('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id')].setData(json['description']);
                     } else if (typeof $('#' + current_element).attr('data-toggle') !== 'undefined' && $('#' + current_element).attr('data-toggle') == 'summernote') {
                         console.log(2);
                         $('#' + current_element).summernote('code', json['description']);
                     }
                     console.log(3);
-                    $('[name*="product_description[2][description]"]').val(json['description']);
+                    $('[name*="product_description[{{ to_lang_id }}][description]"]').val(json['description']);
                 } else {
                     alert('No translation available');
                 }
-
-            //el[1].innerText = json['description'];
         },
         error: function(json) {
             console.log(json);
