@@ -7,7 +7,8 @@ $(document).on('click', '#translate_product', function() {
   var name = $('#input-name{{ from_lang_id }}').val();
   var description = $('#input-description{{ from_lang_id }}').val();
   var meta_title = $('#input-meta-title{{ from_lang_id }}').val();
-  var el = $('.note-editable');
+  var meta_description = $('#input-meta-description{{ from_lang_id }}').val();
+  var meta_keywords = $('#input-meta-keyword{{ from_lang_id }}').val();
 
     $.ajax({
         type: 'post',
@@ -15,7 +16,9 @@ $(document).on('click', '#translate_product', function() {
         data: { 
           name: name,
           description: description,
-          meta_title: meta_title
+          meta_title: meta_title,
+          meta_description: meta_description,
+          meta_keywords: meta_keywords
         },
         dataType: 'json',
         beforeSend: function() {
@@ -43,6 +46,14 @@ $(document).on('click', '#translate_product', function() {
 
             if(json['meta_title']) {
                 $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
+            }
+
+            if(json['meta_description']) {
+                $('#input-meta-description{{ to_lang_id }}').val(json['meta_description']);
+            }
+
+            if(json['meta_keywords']) {
+                $('#input-meta-keyword{{ to_lang_id }}').val(json['meta_keywords']);
             }
         },
         error: function(json) {

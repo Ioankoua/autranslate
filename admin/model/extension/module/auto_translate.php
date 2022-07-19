@@ -247,6 +247,14 @@ class ModelExtensionModuleAutoTranslate extends Model {
             $translations['meta_title'] = $this->translate($from_language, $to_language, $data['meta_title']);
         }
 
+        if($translation_options['meta_description']) {
+            $translations['meta_description'] = $this->translate($from_language, $to_language, $data['meta_description']);
+        }
+
+        if($translation_options['meta_keywords']) {
+            $translations['meta_keywords'] = $this->translate($from_language, $to_language, $data['meta_keywords']);
+        }
+
         return $result[] = $translations;  
     }
 }
