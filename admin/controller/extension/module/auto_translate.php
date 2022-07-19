@@ -100,6 +100,7 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
 
         $this->model_setting_event->addEvent('module_auto_translate', 'admin/view/common/header/after', 'extension/module/auto_translate/eventPostCommonHeader');
         $this->model_setting_event->addEvent('module_auto_translate', 'admin/view/catalog/product_form/after', 'extension/module/auto_translate/view_catalog_product_form_after');
+        $this->model_setting_event->addEvent('module_auto_translate', 'admin/view/extension/d_blog_module/post_form/after', 'extension/module/auto_translate/view_extension_d_blog_module_post_form_after');
     }
     
     public function uninstall() {
@@ -280,5 +281,26 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
         }
         $count_option = array_count_values($arr);
         return max($count_option);
+    }
+    
+    public function view_extension_d_blog_module_post_form_after(&$route, &$data, &$output) {
+        $this->load->model('extension/module/auto_translate');
+        $mydata['url'] = $this->url->link('extension/module/auto_translate/translateBlog&user_token=' . $this->session->data['user_token']);
+        $from_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('en-gb');
+        $to_lang_id =  $this->model_extension_module_auto_translate->getLanguageIdByCode('uk-ua');
+        $mydata['from_lang_id'] = $from_lang_id['language_id'];
+        $mydata['to_lang_id'] = $to_lang_id['language_id'];
+
+        $button = $this->load->view('extension/module/auto_translate/button_translate_blog', $mydata);
+        $html_dom = new d_simple_html_dom();
+        $html_dom->load((string)$output, $lowercase = true, $stripRN = false, $defaultBRText = DEFAULT_BR_TEXT);
+        $html_dom->find('.page-header .pull-right', 0)->innertext = $button . $html_dom->find('.page-header .pull-right', 0)->innertext;
+        $output = (string)$html_dom;
+    }
+
+    public function translateBlog() {
+        $this->load->model('extension/module/auto_translate');
+        $json = $this->model_extension_module_auto_translate->translateBlog('en-gb', 'uk-ua', $this->request->post);
+        $this->response->setOutput(json_encode($json));
     }
 }
