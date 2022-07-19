@@ -12,7 +12,7 @@ $(document).on('click', '#translate_product', function() {
     $.ajax({
         type: 'post',
         url: "{{ url }}",
-        data: {
+        data: { 
           name: name,
           description: description,
           meta_title: meta_title
