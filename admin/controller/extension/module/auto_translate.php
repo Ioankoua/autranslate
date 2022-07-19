@@ -14,7 +14,7 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
         $this->document->setTitle(strip_tags($this->language->get('subheading_title')));
 
         $data['heading_title'] = $this->language->get('heading_title');
-
+        $data['user_token'] = $this->session->data['user_token'];
         $data['entry_key'] = $this->language->get('entry_key');
         $data['entry_language'] = $this->language->get('entry_language');
         $data['entry_type'] = $this->language->get('entry_type');
@@ -28,6 +28,7 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
         $data['button_translate'] = $this->language->get('button_translate');
 
         $data['tab_general'] = $this->language->get('tab_general');
+        $data['tab_translate_fields'] = $this->language->get('tab_translate_fields');
 
         $data['button_cancel'] = $this->language->get('button_cancel');
 
@@ -50,7 +51,7 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
 
         $data['auto_translate_key'] = $this->config->get('module_auto_translate_key');
         $data['auto_translate_code'] = $this->config->get('module_auto_translate_code');
-        $data['auto_translate_region'] = $this->config->get('module_auto_translate_region');
+        $data['auto_translate_translation_fields'] = $this->config->get('module_auto_translate_translation_fields');
 
         $data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
 
@@ -65,33 +66,6 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
                 $data['languages'][] = $language;
             }
         }
-        
-        $data['regions'] = array(
-            'global',
-            'australiaeast',
-            'brazilsouth',
-            'canadacentral',
-            'centralindia',
-            'centralus',
-            'centraluseuap',
-            'eastasia',
-            'eastus',
-            'eastus2',
-            'francecentral',
-            'japaneast',
-            'japanwest',
-            'koreacentral',
-            'northcentralus',
-            'northeurope',
-            'southcentralus',
-            'southeastasia',
-            'uksouth',
-            'westcentralus',
-            'westeurope',
-            'westus',
-            'westus2',
-            'southafricanorth'
-        );
 
         $data['types'] = array(
             'product'
@@ -111,8 +85,13 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
 
         $this->load->model('setting/setting');
 
+        $translation_fields = array(
+            'product' => ['name' => 1, 'description' => 1, 'meta_title' => 1, 'meta_description' => 1, 'meta_keywords' => 1]
+        );
+
         $data = array(
-            'module_auto_translate_status' => true
+            'module_auto_translate_status' => true,
+            'module_auto_translate_translation_fields' => $translation_fields
         );
 
         $this->model_setting_setting->editSetting('module_auto_translate', $data);
@@ -186,11 +165,17 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
             $this->load->model('setting/setting');
             
             $this->request->post['module_auto_translate_status'] = true;
-           
+            $this->request->post['module_auto_translate_translation_fields'] = $this->config->get('module_auto_translate_translation_fields');
             $this->model_setting_setting->editSetting('module_auto_translate', $this->request->post);
 
             $this->response->setOutput(json_encode(array()));
         }
+    }
+
+    public function updateTranslationFields() {
+        $this->load->model('setting/setting');
+        $this->model_setting_setting->editSettingValue('module_auto_translate', 'module_auto_translate_translation_fields', $this->request->post);
+        $this->response->setOutput(json_encode(array()));
     }
 
     public function translate() {
@@ -281,7 +266,8 @@ class ControllerExtensionModuleAutoTranslate extends Controller {
 
     public function translateProduct() {
         $this->load->model('extension/module/auto_translate');
-        $json = $this->model_extension_module_auto_translate->translateOneProduct('en-gb', 'uk-ua', $this->request->post);
+        $translation_options = $this->config->get('module_auto_translate_translation_fields');
+        $json = $this->model_extension_module_auto_translate->translateProduct('en-gb', 'uk-ua', $this->request->post, $translation_options['product']);
         $this->response->setOutput(json_encode($json));
     }
 

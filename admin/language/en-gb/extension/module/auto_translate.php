@@ -22,6 +22,7 @@ $_['entry_region']              = 'API Region';
 $_['entry_language']            = 'Language to Translate to';
 $_['entry_type']                = 'Type';
 $_['entry_start']               = 'Start Translating From';
+$_['tab_translate_fields']      = 'Translation Fields';
 
 // Error
 $_['error_permission']          = 'Warning: You do not have permission to modify module Auto Translate!';

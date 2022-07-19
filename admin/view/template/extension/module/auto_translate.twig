@@ -22,12 +22,16 @@
         <div class="form-horizontal">
           <ul class="nav nav-tabs">
             <li class="nav-item active">
-              <a href="#tab-general" data-toggle="tab" class="nav-link active">{{ tab_general }}</a></li>
+              <a href="#tab-general" data-toggle="tab" class="nav-link active">{{ tab_general }}</a>
+            </li>
+            <li class="nav-item">
+              <a href="#tab-translate-fields" data-toggle="tab" class="nav-link">{{ tab_translate_fields }}</a>
+            </li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab-general">
               <form id="auto-translate-form" class="row">
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                   <div class="row">
                     <label class="col-sm-4 control-label col-form-label" for="input-key">{{ entry_key }}</label>
                     <div class="col-sm-8">
@@ -35,7 +39,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                   <div class="row">
                     <label class="col-sm-4 control-label col-form-label" for="input-code">{{ entry_code }}</label>
                     <div class="col-sm-8">
@@ -43,19 +47,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="col-sm-3">
-                  <div class="row">
-                    <label class="col-sm-4 control-label col-form-label" for="input-region">{{ entry_region }}</label>
-                    <div class="col-sm-8">
-                      <select name="module_auto_translate_region" id="input-region" class="form-control">
-                        {% for region in regions %}
-                        <option value="{{ region }}"{{ auto_translate_region == region ? ' selected="selected"' : '' }}>{{ region }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-3 text-center">
+                <div class="col-sm-4 text-center">
                   <a id="button-update-credentials" class="btn btn-success text-white">{{ button_update }}</a>
                 </div>
               </form>
@@ -108,6 +100,26 @@
                 </div>
               </div>
             </div>
+            <div class="tab-pane" id="tab-translate-fields">
+              <form id="translation-fields-form" class="row">
+                <div class="col-sm-12">  
+                  <div class="row">
+                    <div class="col-sm-1">Product</div>
+                    <div class="col-sm-11">
+                     {% for key, product_field in auto_translate_translation_fields.product %}
+                        <label class="checkbox-inline">
+                          <input type="hidden" name="product[{{ key }}]" value="0" />
+                          <input name="product[{{ key }}]" type="checkbox" {% if product_field %} checked value="1" {% endif %} > {{ key }}
+                        </label>
+                      {% endfor %}
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-12" style="padding-top: 20px;">
+                  <a id="button-update-translation-fields" class="btn btn-primary">Save</a>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>
@@ -115,9 +127,29 @@
   </div>
 </div>
 <script type="text/javascript"><!--//
+$('#button-update-translation-fields').on('click', function () {
+    $.ajax({
+        url: 'index.php?route=extension/module/auto_translate/updateTranslationFields&user_token={{ user_token }}',
+        type: 'post',
+        data: $("#translation-fields-form").serialize(),
+        dataType: 'json',
+        beforeSend: function () {
+            $('#button-update-translation-fields').after('<i class="fa fa-spinner fa-spin"></i>');
+        },
+        success: function (json) {
+            $('.fa-spinner').remove();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+        }
+    });
+
+    return false;
+});
+
 $('#button-update-credentials').on('click', function () {
     $.ajax({
-        url: 'index.php?route=extension/module/auto_translate/update{{ equotix_token }}',
+        url: 'index.php?route=extension/module/auto_translate/update&user_token={{ user_token }}',
         type: 'post',
         data: $("#auto-translate-form").serialize(),
         dataType: 'json',
@@ -173,4 +205,14 @@ function mass_translate(url) {
 }
 
 //--></script>
+
+<style>
+#translate-options {
+  padding-top: 20px;
+}
+
+.checkbox-inline {
+  padding-top: 0 !important;
+}
+</style>
 {{ footer }} 

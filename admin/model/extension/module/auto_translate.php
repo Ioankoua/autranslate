@@ -42,6 +42,26 @@ class ModelExtensionModuleAutoTranslate extends Model {
         }
     }
 
+    public function getTranslateFields($type) {
+        switch ($type) {
+            case 'product':
+                $fields = array (
+                    'name' => 'Product Name',
+                    'description' => 'Description',
+                    'meta_title' => 'Meta Tag Title',
+                    'meta_description' => 'Meta Tag Description',
+                    'meta_keywords' => 'Meta Tag Keywords'
+                );
+                break;
+            
+            default:
+                # code...
+                break;
+        }
+
+        return $fields;
+    }
+
     public function getTotal($type, $from_language) {
         if ($type == 'banner') {
             $query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "banner_image WHERE language_id = '" . (int)$from_language['language_id'] . "'");
@@ -213,14 +233,20 @@ class ModelExtensionModuleAutoTranslate extends Model {
 		return $query->row;
 	}
     
-    public function translateOneProduct($from_language, $to_language, $data) {
+    public function translateProduct($from_language, $to_language, $data, $translation_options) {
+        $translations = array();
+        if($translation_options['name']) {
+            $translations['name'] = $this->translate($from_language, $to_language, $data['name']);
+        }
 
-        $name = $this->translate($from_language, $to_language, $data['name']);
-        $description = $this->translate($from_language, $to_language, $data['description']);
-        $meta_title = $this->translate($from_language, $to_language, $data['meta_title']);
-        $description = html_entity_decode($description, ENT_QUOTES);
-        
+        if($translation_options['description']) {
+            $translations['description'] = html_entity_decode($this->translate($from_language, $to_language, $data['description']), ENT_QUOTES);
+        }
 
-        return $result[] = ['name' => $name, 'description' => $description, 'meta_title' => $meta_title];  
+        if($translation_options['meta_title']) {
+            $translations['meta_title'] = $this->translate($from_language, $to_language, $data['meta_title']);
+        }
+
+        return $result[] = $translations;  
     }
 }

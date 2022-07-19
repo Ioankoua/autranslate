@@ -25,10 +25,9 @@ $(document).on('click', '#translate_product', function() {
             $('#form-product').fadeTo('slow', 1);
         },
         success: function(json) {
-            console.log(json)
-            $('#input-name{{ to_lang_id }}').val(json['name']);
-            $('#input-description{{ to_lang_id }}').val(json['description']);
-            $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
+            if(json['name']) {
+                $('#input-name{{ to_lang_id }}').val(json['name']);
+            }
 
             if (json['description']) {
                     var current_element = $('[name*="product_description[{{ to_lang_id }}][description]"]').attr('id');
@@ -40,9 +39,11 @@ $(document).on('click', '#translate_product', function() {
                     }
                     console.log(3);
                     $('[name*="product_description[{{ to_lang_id }}][description]"]').val(json['description']);
-                } else {
-                    alert('No translation available');
-                }
+            } 
+
+            if(json['meta_title']) {
+                $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
+            }
         },
         error: function(json) {
             console.log(json);
