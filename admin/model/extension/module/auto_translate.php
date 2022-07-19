@@ -255,6 +255,6 @@ class ModelExtensionModuleAutoTranslate extends Model {
             $translations['meta_keywords'] = $this->translate($from_language, $to_language, $data['meta_keywords']);
         }
 
-        return $result[] = $translations;  
+        return $translations;  
     }
 }
