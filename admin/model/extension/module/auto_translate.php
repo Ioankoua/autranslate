@@ -42,26 +42,6 @@ class ModelExtensionModuleAutoTranslate extends Model {
         }
     }
 
-    public function getTranslateFields($type) {
-        switch ($type) {
-            case 'product':
-                $fields = array (
-                    'name' => 'Product Name',
-                    'description' => 'Description',
-                    'meta_title' => 'Meta Tag Title',
-                    'meta_description' => 'Meta Tag Description',
-                    'meta_keywords' => 'Meta Tag Keywords'
-                );
-                break;
-            
-            default:
-                # code...
-                break;
-        }
-
-        return $fields;
-    }
-
     public function getTotal($type, $from_language) {
         if ($type == 'banner') {
             $query = $this->db->query("SELECT COUNT(*) AS total FROM " . DB_PREFIX . "banner_image WHERE language_id = '" . (int)$from_language['language_id'] . "'");
@@ -105,68 +85,6 @@ class ModelExtensionModuleAutoTranslate extends Model {
             $this->updateAttributeGroup($from_language, $to_language, $start);
         } elseif ($type == 'product_attribute') {
             $this->updateProductAttribute($from_language, $to_language, $start);
-        }
-    }
-
-    public function updateCategory($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY name ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Name
-            $name = $this->translate($from_language, $to_language, $result['name']);
-
-            // Description
-            $result['description'] = html_entity_decode($result['description'], ENT_QUOTES);
-
-            $description = $this->translate($from_language, $to_language, $result['description']);
-            
-            // Meta title
-            $meta_title = $this->translate($from_language, $to_language, $result['meta_title']);
-
-            // Meta Description
-            $meta_description = $this->translate($from_language, $to_language, $result['meta_description']);
-
-            // Meta Keywords
-            $meta_keyword = $this->translate($from_language, $to_language, $result['meta_keyword']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "category_description WHERE category_id = '" . (int)$result['category_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "category_description SET category_id = '" . (int)$result['category_id'] . "', language_id = '" . (int)$to_language['language_id'] . "', name = '" . $this->db->escape($name) . "', description = '" . $this->db->escape($description) . "', meta_title = '" . $this->db->escape($meta_title) . "', meta_description = '" . $this->db->escape($meta_description) . "', meta_keyword = '" . $this->db->escape($meta_keyword) . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "category_description SET name = '" . $this->db->escape($name) . "', description = '" . $this->db->escape($description) . "', meta_title = '" . $this->db->escape($meta_title) . "', meta_description = '" . $this->db->escape($meta_description) . "', meta_keyword = '" . $this->db->escape($meta_keyword) . "' WHERE category_id = '" . (int)$result['category_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
-        }
-    }
-
-    public function updateInformation($from_language, $to_language, $start) {
-        $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "information_description WHERE language_id = '" . (int)$from_language['language_id'] . "' ORDER BY title ASC LIMIT " . (int)$start . ",10");
-
-        foreach ($query->rows as $result) {
-            // Title
-            $title = $this->translate($from_language, $to_language, $result['title']);
-            
-            // Meta title
-            $meta_title = $this->translate($from_language, $to_language, $result['meta_title']);
-            
-            // Meta description
-            $meta_description = $this->translate($from_language, $to_language, $result['meta_description']);
-            
-            // Meta Keyword
-            $meta_keyword = $this->translate($from_language, $to_language, $result['meta_keyword']);
-
-            // Description
-            $result['description'] = html_entity_decode($result['description'], ENT_QUOTES);
-
-            $description = $this->translate($from_language, $to_language, $result['description']);
-
-            $query = $this->db->query("SELECT * FROM " . DB_PREFIX . "information_description WHERE information_id = '" . (int)$result['information_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-
-            if (!$query->num_rows) {
-                $this->db->query("INSERT INTO " . DB_PREFIX . "information_description SET information_id = '" . (int)$result['information_id'] . "', language_id = '" . (int)$to_language['language_id'] . "', title = '" . $this->db->escape($title) . "', description = '" . $this->db->escape($description) . "', meta_title = '" . $this->db->escape($meta_title) . "', meta_description = '" . $this->db->escape($meta_description) . "', meta_keyword = '" . $this->db->escape($meta_keyword) . "'");
-            } else {
-                $this->db->query("UPDATE " . DB_PREFIX . "information_description SET title = '" . $this->db->escape($title) . "', description = '" . $this->db->escape($description) . "', meta_title = '" . $this->db->escape($meta_title) . "', meta_description = '" . $this->db->escape($meta_description) . "', meta_keyword = '" . $this->db->escape($meta_keyword) . "' WHERE information_id = '" . (int)$result['information_id'] . "' AND language_id = '" . (int)$to_language['language_id'] . "'");
-            }
         }
     }
 
