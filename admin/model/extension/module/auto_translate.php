@@ -175,4 +175,22 @@ class ModelExtensionModuleAutoTranslate extends Model {
 
         return $translations;  
     }
+
+    public function translateBlog($from_language, $to_language, $data) {
+        $translations = array();
+        if($translation_options['title']) {
+            $title = $this->translate($from_language, $to_language, $data['title']);
+        }
+        if($translation_options['short_description']) {
+            $short_description = $this->translate($from_language, $to_language, $data['short_description']);
+        }
+        if($translation_options['description']) {
+            $translations['description'] = html_entity_decode($this->translate($from_language, $to_language, $data['description']), ENT_QUOTES);
+        }
+        if($translation_options['meta_title']) {
+            $meta_title = $this->translate($from_language, $to_language, $data['meta_title']);
+        }
+        
+        return $translations;
+    }
 }
