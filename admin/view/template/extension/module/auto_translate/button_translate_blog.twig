@@ -1,0 +1,52 @@
+<button id="translate_blog" data-toggle="tooltip" title="Translate" class="btn btn-warning"><i class="fa fa-refresh"></i></button>
+<script>
+$(document).on('click', '#translate_blog', function() {
+  var title = $('#input-title{{ from_lang_id }}').val();
+  var short_description = $('#input-short-description{{ from_lang_id }}').val();
+  var description = $('#input-description{{ from_lang_id }}').val();
+  var meta_title = $('#input-meta-title{{ from_lang_id }}').val();
+  var el = $('.note-editable');
+
+    $.ajax({
+        type: 'post',
+        url: "{{ url }}",
+        data: { 
+          title: title,
+          short_description, short_description,
+          description: description,
+          meta_title: meta_title
+        },
+        dataType: 'json',
+        beforeSend: function() {
+            $('#form-post').fadeTo('slow', 0.5);
+        },
+        complete: function() {
+            $('#form-post').fadeTo('slow', 1);
+        },
+        success: function(json) {
+            console.log(json)
+            $('#input-title{{ to_lang_id }}').val(json['title']);
+            $('#input-short-description{{ to_lang_id }}').val(json['short_description']);
+            $('#input-description{{ to_lang_id }}').val(json['description']);
+            $('#input-meta-title{{ to_lang_id }}').val(json['meta_title']);
+
+            if (json['description']) {
+                    var current_element = $('[name*="post_description[{{ to_lang_id }}][description]"]').attr('id');
+                    
+                    if (typeof CKEDITOR !== 'undefined' && CKEDITOR.instances[$('[name*="post_description[{{ to_lang_id }}][description]"]').attr('id')]) {
+                        CKEDITOR.instances[$('[name*="post_description[{{ to_lang_id }}][description]"]').attr('id')].setData(json['description']);
+                    } else if (typeof $('#' + current_element).attr('data-toggle') !== 'undefined' && $('#' + current_element).attr('data-toggle') == 'summernote') {
+                        $('#' + current_element).summernote('code', json['description']);
+                    }
+                    console.log(3);
+                    $('[name*="post_description[{{ to_lang_id }}][description]"]').val(json['description']);
+                } else {
+                    alert('No translation available');
+                }
+        },
+        error: function(json) {
+            console.log(json);
+        }
+    });
+});
+</script>
